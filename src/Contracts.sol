@@ -77,7 +77,7 @@ abstract contract Contracts is CeloChains {
         }
     }
 
-    function lookup(string memory contractName) internal view returns (address payable found) {
+    function lookup(string memory contractName) public view returns (address payable found) {
         address payable[] memory results = new address payable[](4);
         results[0] = _lookupDependencies(contractName);
         results[1] = _lookupDeployed(contractName);
@@ -116,7 +116,7 @@ abstract contract Contracts is CeloChains {
         require(!foundMany, string(abi.encodePacked("Contracts: ", contractName, " found in multiple sources")));
     }
 
-    function lookupDeployed(string memory contractName) internal view returns (address payable addr) {
+    function lookupDeployed(string memory contractName) public view returns (address payable addr) {
         addr = _lookupDeployed(contractName);
         require(
             addr != address(0),
@@ -139,7 +139,7 @@ abstract contract Contracts is CeloChains {
         return payable(celoRegistry.getAddressForString(contractName));
     }
 
-    function lookupDependencies(string memory contractName) internal view returns (address payable addr) {
+    function lookupDependencies(string memory contractName) public view returns (address payable addr) {
         addr = _lookupDependencies(contractName);
         require(
             addr != address(0), string(abi.encodePacked("Contracts: ", contractName, " not found in dependencies."))
@@ -158,7 +158,7 @@ abstract contract Contracts is CeloChains {
         return abi.decode(contractAddressRaw, (address));
     }
 
-    function lookupGovernanceFactory(string memory contractName) internal view returns (address payable addr) {
+    function lookupGovernanceFactory(string memory contractName) public view returns (address payable addr) {
         addr = _lookupGovernanceFactory(contractName);
         require(
             addr != address(0),
