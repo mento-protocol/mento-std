@@ -1,0 +1,15 @@
+{
+  "name": "mento-std",
+  "version": "1.0.0",
+  "description": "Extension of forge-std with additional Mento utilities",
+  "main": "index.js",
+  "scripts": {
+    "gen:array-helpers": "pnpm tsx bin/gen-array-helpers"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tsx": "^4.17.0"
+  }
+}

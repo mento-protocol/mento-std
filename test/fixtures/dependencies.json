@@ -1,0 +1,17 @@
+{
+  "42220": {
+    "Contract03": "0x1C93B393d68Db88e3A61d779a16CC15ba4d2A69b",
+    "StableToken": "0x1C93B393d68Db88e3A61d779a16CC15ba4d2A69b",
+    "GovernanceFactory": "0x07a1280C059601E11d5CB2aa35A073824c3F060d"
+  },
+  "62320": {
+    "Contract03": "0xeFDD5d5171C535845012b512406cf95c7eDb853a",
+    "StableToken": "0x1C93B393d68Db88e3A61d779a16CC15ba4d2A69b",
+    "GovernanceFactory": "0x07a1280C059601E11d5CB2aa35A073824c3F060d"
+  },
+  "44787": {
+    "Contract03": "0x7a597644a7C7526f3E501BA27C8bDdc6a2a54D70",
+    "StableToken": "0x1C93B393d68Db88e3A61d779a16CC15ba4d2A69b",
+    "GovernanceFactory": "0x07a1280C059601E11d5CB2aa35A073824c3F060d"
+  }
+}
