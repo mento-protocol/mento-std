@@ -16,15 +16,7 @@ import {CeloPrecompiles} from "./CeloPrecompiles.sol";
 import {TestBase} from "forge-std/Base.sol";
 
 // ⭐️ TEST
-abstract contract Test is
-    TestBase,
-    StdAssertions,
-    CeloChains,
-    StdCheats,
-    StdInvariant,
-    StdUtils,
-    CeloPrecompiles
-{
+abstract contract Test is TestBase, StdAssertions, CeloChains, StdCheats, StdInvariant, StdUtils, CeloPrecompiles {
     // Note: IS_TEST() must return true.
     bool public IS_TEST = true;
 }

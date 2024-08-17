@@ -8,13 +8,9 @@ interface IRegistry {
 
     function getAddressFor(bytes32) external view returns (address);
 
-    function getAddressForStringOrDie(
-        string calldata identifier
-    ) external view returns (address);
+    function getAddressForStringOrDie(string calldata identifier) external view returns (address);
 
-    function getAddressForString(
-        string calldata identifier
-    ) external view returns (address);
+    function getAddressForString(string calldata identifier) external view returns (address);
 
     function isOneOf(bytes32[] calldata, address) external view returns (bool);
 }

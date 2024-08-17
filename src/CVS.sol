@@ -18,14 +18,8 @@ library CVS {
         deployTo(target, contractPath, abi.encodePacked());
     }
 
-    function deploy(
-        string memory contractPath,
-        bytes memory args
-    ) internal returns (address addr) {
-        bytes memory bytecode = abi.encodePacked(
-            vm.getCode(contractPath),
-            args
-        );
+    function deploy(string memory contractPath, bytes memory args) internal returns (address addr) {
+        bytes memory bytecode = abi.encodePacked(vm.getCode(contractPath), args);
 
         // solhint-disable-next-line no-inline-assembly
         assembly {
@@ -34,18 +28,11 @@ library CVS {
         return addr;
     }
 
-    function deployTo(
-        address target,
-        string memory contractPath,
-        bytes memory args
-    ) internal {
+    function deployTo(address target, string memory contractPath, bytes memory args) internal {
         bytes memory creationCode = vm.getCode(contractPath);
         vm.etch(target, abi.encodePacked(creationCode, args));
         (bool success, bytes memory runtimeBytecode) = target.call("");
-        require(
-            success,
-            "deployTo(address,string,bytes): Failed to create runtime bytecode."
-        );
+        require(success, "deployTo(address,string,bytes): Failed to create runtime bytecode.");
         vm.etch(target, runtimeBytecode);
     }
 }

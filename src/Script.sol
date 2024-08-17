@@ -14,13 +14,7 @@ import {Contracts} from "./Contracts.sol";
 import {ScriptBase} from "forge-std/Base.sol";
 
 // ⭐️ SCRIPT
-abstract contract Script is
-    ScriptBase,
-    CeloChains,
-    Contracts,
-    StdCheatsSafe,
-    StdUtils
-{
+abstract contract Script is ScriptBase, CeloChains, Contracts, StdCheatsSafe, StdUtils {
     // Note: IS_SCRIPT() must return true.
     bool public IS_SCRIPT = true;
 }

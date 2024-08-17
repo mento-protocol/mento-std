@@ -19,12 +19,8 @@ contract MockGovernanceFactory is Test {
         mentoToken = makeAddr(string(abi.encodePacked(prefix, "/MentoToken")));
         emission = makeAddr(string(abi.encodePacked(prefix, "/Emission")));
         airgrab = makeAddr(string(abi.encodePacked(prefix, "/Airgrab")));
-        governanceTimelock = makeAddr(
-            string(abi.encodePacked(prefix, "/GovernanceTimelock"))
-        );
-        mentoGovernor = makeAddr(
-            string(abi.encodePacked(prefix, "/MentoGovernor"))
-        );
+        governanceTimelock = makeAddr(string(abi.encodePacked(prefix, "/GovernanceTimelock")));
+        mentoGovernor = makeAddr(string(abi.encodePacked(prefix, "/MentoGovernor")));
         locking = makeAddr(string(abi.encodePacked(prefix, "/Locking")));
     }
 }
@@ -105,9 +101,7 @@ abstract contract ContractsTest is Test, Contracts {
         address mentoToken = lookupGovernanceFactory("MentoToken");
         address emission = lookupGovernanceFactory("Emission");
         address airgrab = lookupGovernanceFactory("Airgrab");
-        address governanceTimelock = lookupGovernanceFactory(
-            "GovernanceTimelock"
-        );
+        address governanceTimelock = lookupGovernanceFactory("GovernanceTimelock");
         address mentoGovernor = lookupGovernanceFactory("MentoGovernor");
         address locking = lookupGovernanceFactory("Locking");
 
@@ -141,9 +135,7 @@ contract CeloContractsTest is ContractsTest {
         mentoGovernorExpected = makeAddr("celo/MentoGovernor");
         lockingExpected = makeAddr("celo/Locking");
         sortedOraclesExpected = 0xefB84935239dAcdecF7c5bA76d8dE40b077B7b33;
-        address mockGovernanceFactory = address(
-            new MockGovernanceFactory("celo")
-        );
+        address mockGovernanceFactory = address(new MockGovernanceFactory("celo"));
         address governanceFactory = lookup("GovernanceFactory");
         vm.etch(governanceFactory, mockGovernanceFactory.code);
         super.setUp();
@@ -163,9 +155,7 @@ contract BaklavaContractsTest is ContractsTest {
         mentoGovernorExpected = makeAddr("baklava/MentoGovernor");
         lockingExpected = makeAddr("baklava/Locking");
         sortedOraclesExpected = 0x88A187a876290E9843175027902B9f7f1B092c88;
-        address mockGovernanceFactory = address(
-            new MockGovernanceFactory("baklava")
-        );
+        address mockGovernanceFactory = address(new MockGovernanceFactory("baklava"));
         address governanceFactory = lookup("GovernanceFactory");
         vm.etch(governanceFactory, mockGovernanceFactory.code);
         super.setUp();
@@ -185,9 +175,7 @@ contract AlfajoresContractsTest is ContractsTest {
         mentoGovernorExpected = makeAddr("alfajores/MentoGovernor");
         lockingExpected = makeAddr("alfajores/Locking");
         sortedOraclesExpected = 0xFdd8bD58115FfBf04e47411c1d228eCC45E93075;
-        address mockGovernanceFactory = address(
-            new MockGovernanceFactory("alfajores")
-        );
+        address mockGovernanceFactory = address(new MockGovernanceFactory("alfajores"));
         address governanceFactory = lookup("GovernanceFactory");
         vm.etch(governanceFactory, mockGovernanceFactory.code);
         super.setUp();

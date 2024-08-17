@@ -13,7 +13,7 @@ contract CeloPrecompilesTest is Test {
         address to = address(0x2);
 
         vm.deal(from, 100);
-        (bool ok, ) = TRANSFER_PRECOMPILE.call(abi.encode(from, to, 100));
+        (bool ok,) = TRANSFER_PRECOMPILE.call(abi.encode(from, to, 100));
 
         assertEq(ok, true);
         assertEq(from.balance, 0);
@@ -24,16 +24,8 @@ contract CeloPrecompilesTest is Test {
         address from = address(0x1);
         address to = address(0x2);
 
-        (bool ok, bytes memory data) = TRANSFER_PRECOMPILE.call(
-            abi.encode(from, to, 100)
-        );
+        (bool ok, bytes memory data) = TRANSFER_PRECOMPILE.call(abi.encode(from, to, 100));
         assertEq(ok, false);
-        assertEq(
-            data,
-            abi.encodeWithSignature(
-                "Error(string)",
-                "TransferPrecompile: insufficient balance"
-            )
-        );
+        assertEq(data, abi.encodeWithSignature("Error(string)", "TransferPrecompile: insufficient balance"));
     }
 }
