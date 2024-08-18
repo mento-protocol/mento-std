@@ -17,4 +17,8 @@ import {ScriptBase} from "forge-std/Base.sol";
 abstract contract Script is ScriptBase, CeloChains, Contracts, StdCheatsSafe, StdUtils {
     // Note: IS_SCRIPT() must return true.
     bool public IS_SCRIPT = true;
+
+    function dependenciesPath() internal pure virtual override returns (string memory) {
+        return "/dependencies.json";
+    }
 }
