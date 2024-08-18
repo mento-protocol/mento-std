@@ -11,7 +11,6 @@ import {CeloChains} from "./CeloChains.sol";
 import {stdJson} from "forge-std/StdJson.sol";
 import {IRegistry} from "./interfaces/IRegistry.sol";
 import {CELO_REGISTRY_ADDRESS} from "./Constants.sol";
-import {toString} from "./Utils.sol";
 
 struct CreateTx {
     address contractAddress;
@@ -57,7 +56,7 @@ abstract contract Contracts is CeloChains {
         string memory root = vm.projectRoot();
         string memory path = string(
             abi.encodePacked(
-                root, "/broadcast/", script, ".sol/", toString(block.chainid), "/", "run-", timestamp, ".json"
+                root, "/broadcast/", script, ".sol/", vm.toString(block.chainid), "/", "run-", timestamp, ".json"
             )
         );
 
@@ -149,7 +148,7 @@ abstract contract Contracts is CeloChains {
     function _lookupDependencies(string memory contractName) private view returns (address payable) {
         bytes memory contractAddressRaw = dependencies.parseRaw(
             // solhint-disable-next-line quotes
-            string(abi.encodePacked('["', toString(block.chainid), '"]', '["', contractName, '"]'))
+            string(abi.encodePacked('["', vm.toString(block.chainid), '"]', '["', contractName, '"]'))
         );
 
         if (contractAddressRaw.length != 32) {
