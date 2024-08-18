@@ -13,7 +13,7 @@ import {IRegistry} from "./interfaces/IRegistry.sol";
 import {CELO_REGISTRY_ADDRESS} from "./Constants.sol";
 
 /**
- * @title Contracts
+ * @title ContractsLookup
  * @notice Abstract contract that implements the logic to lookup contracts recorded in various sources.
  * It has four strategies to lookup contracts:
  * 1. From the dependencies.json file.
@@ -22,7 +22,7 @@ import {CELO_REGISTRY_ADDRESS} from "./Constants.sol";
  * 4. From the GovernanceFactory contract, if it can be found in (1) or (2). 
  * @dev This contract is meant to be inherited by other contracts that need to lookup contracts.
  */
-abstract contract Contracts is CeloChains {
+abstract contract ContractsLookup is CeloChains {
     using stdJson for string;
 
     /// @notice Interface to the Forge VM.
