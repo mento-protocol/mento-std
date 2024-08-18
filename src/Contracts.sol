@@ -12,46 +12,77 @@ import {stdJson} from "forge-std/StdJson.sol";
 import {IRegistry} from "./interfaces/IRegistry.sol";
 import {CELO_REGISTRY_ADDRESS} from "./Constants.sol";
 
-struct CreateTx {
-    address contractAddress;
-    string contractName;
-}
-
-struct Result {
-    CreateTx[] txs;
-}
-
+/**
+ * @title Contracts
+ * @notice Abstract contract that implements the logic to lookup contracts recorded in various sources.
+ * It has four strategies to lookup contracts:
+ * 1. From the dependencies.json file.
+ * 2. From the contracts recorded in the broadcast scripts, and explicitly loaded by the `load` function.
+ * 3. From the Celo registry.
+ * 4. From the GovernanceFactory contract, if it can be found in (1) or (2). 
+ * @dev This contract is meant to be inherited by other contracts that need to lookup contracts.
+ */
 abstract contract Contracts is CeloChains {
     using stdJson for string;
 
+    /// @notice Interface to the Forge VM.
     Vm private constant vm = Vm(VM_ADDRESS);
+
+    /// @notice The Celo registry contract.
     IRegistry private constant celoRegistry = IRegistry(CELO_REGISTRY_ADDRESS);
 
+    /// @notice Stores contracts parsed from broadcast scripts.
+    /// @dev Is populated by the `load` function.
     mapping(bytes32 contractName => address contractAddress) private contractAddress;
+
+    /// @notice Stores the content of the `dependencies.json` file, as a string.
     string private dependencies;
 
-    mapping(bytes32 contractName => bytes getterCallData) private governanceFactoryLookupCalldata;
+    /// @dev keeps a mapping between hash(contractName) and the call data needed to read
+    /// the contract address from the GovernanceFactory contract. The mapping
+    /// is build in the constructor.
+    mapping(bytes32 contractNameHash => bytes getterFn) private govFactoryLookupFn;
 
-    // @dev To be overriden by implementing contract.
+    /// @dev To be overriden by implementing contract in order to specify the location
+    /// of the `dependencies.json` file. It's defaulted to `./dependencies.json` at
+    /// the project root.
     function dependenciesPath() internal virtual returns (string memory);
 
+    /// @dev Reads the dependencies.json file and constructs the call data for looking up
+    /// contracts deployed by the GovernanceFactory.
     constructor() {
         string memory root = vm.projectRoot();
         string memory path = string(abi.encodePacked(root, dependenciesPath()));
         dependencies = vm.readFile(path);
-        governanceFactoryLookupCalldata[keccak256("MentoToken")] = abi.encodeWithSignature("mentoToken()");
-        governanceFactoryLookupCalldata[keccak256("Emission")] = abi.encodeWithSignature("emission()");
-        governanceFactoryLookupCalldata[keccak256("GovernanceTimelock")] =
-            abi.encodeWithSignature("governanceTimelock()");
-        governanceFactoryLookupCalldata[keccak256("MentoGovernor")] = abi.encodeWithSignature("mentoGovernor()");
-        governanceFactoryLookupCalldata[keccak256("Locking")] = abi.encodeWithSignature("locking()");
-        governanceFactoryLookupCalldata[keccak256("Airgrab")] = abi.encodeWithSignature("airgrab()");
+
+        govFactoryLookupFn[keccak256("MentoToken")] = abi.encodeWithSignature("mentoToken()");
+        govFactoryLookupFn[keccak256("Emission")] = abi.encodeWithSignature("emission()");
+        govFactoryLookupFn[keccak256("GovernanceTimelock")] = abi.encodeWithSignature("governanceTimelock()");
+        govFactoryLookupFn[keccak256("MentoGovernor")] = abi.encodeWithSignature("mentoGovernor()");
+        govFactoryLookupFn[keccak256("Locking")] = abi.encodeWithSignature("locking()");
+        govFactoryLookupFn[keccak256("Airgrab")] = abi.encodeWithSignature("airgrab()");
     }
 
+    /**
+     * @notice Shortcut to load a broadcast script by script name and timing suffix.
+     * @param script The script name without the `.sol` termination. It should match
+     * a folder in `broadcast/`.
+     * @param timestamp A timestamp string or `latest`. It should match one of the 
+     * run-{timestamp}.json files in the broadcast folder for the current chain.
+      */
     function load(string memory script, string memory timestamp) internal {
         load(script, timestamp, true);
     }
 
+
+    /**
+     * @notice Load a broadcast script by script name, timing suffix and silence setting.
+     * @param script The script name without the `.sol` termination. It should match
+     * a folder in `broadcast/`.
+     * @param timestamp A timestamp string or `latest`. It should match one of the 
+     * run-{timestamp}.json files in the broadcast folder for the current chain.
+     * @param silent Set eether to log indexed contracts or not.
+     */
     function load(string memory script, string memory timestamp, bool silent) internal {
         string memory root = vm.projectRoot();
         string memory path = string(
@@ -76,6 +107,14 @@ abstract contract Contracts is CeloChains {
         }
     }
 
+    /**
+     * @notice Lookup a contract in all possible sources and return the address if it's found
+     * in only one.
+     * @dev Will throw if the contract isn't found anywhere or if there's a conflict and the 
+     * addresses are different.
+     * @param contractName The name of the contract to lookup.
+     * @return found The address of the contract.
+     */
     function lookup(string memory contractName) public view returns (address payable found) {
         address payable[] memory results = new address payable[](4);
         results[0] = _lookupDependencies(contractName);
@@ -89,7 +128,7 @@ abstract contract Contracts is CeloChains {
             if (results[i] != address(0) && found == address(0)) {
                 found = results[i];
                 foundNone = false;
-            } else if (results[i] != address(0)) {
+            } else if (results[i] != address(0) && results[i] != found) {
                 foundMany = true;
             }
         }
@@ -115,36 +154,57 @@ abstract contract Contracts is CeloChains {
         require(!foundMany, string(abi.encodePacked("Contracts: ", contractName, " found in multiple sources")));
     }
 
-    function lookupDeployed(string memory contractName) public view returns (address payable addr) {
-        addr = _lookupDeployed(contractName);
+    /**
+     * @notice Lookup a contract in contracts recorded from broadcast scripts.
+     * @dev Will throw if the contract isn't found.
+     * @param contractName The name of the contract to lookup.
+     * @return found The address of the contract.
+     */
+    function lookupDeployed(string memory contractName) public view returns (address payable found) {
+        found = _lookupDeployed(contractName);
         require(
-            addr != address(0),
+            found != address(0),
             string(abi.encodePacked("Contracts: ", contractName, " not found in loaded deployment scripts."))
         );
     }
 
-    function _lookupDeployed(string memory contractName) private view returns (address payable addr) {
-        addr = payable(contractAddress[keccak256(bytes(contractName))]);
+    /// @dev Internal method that returns address(0) if contract is not found in the source.
+    function _lookupDeployed(string memory contractName) private view returns (address payable found) {
+        found = payable(contractAddress[keccak256(bytes(contractName))]);
     }
 
-    function lookupCeloRegistry(string memory contractName) internal view returns (address payable addr) {
-        addr = _lookupCeloRegistry(contractName);
+    /**
+     * @notice Lookup a contract in Celo Registry.
+     * @dev Will throw if the contract isn't found.
+     * @param contractName The name of the contract to lookup.
+     * @return found The address of the contract.
+     */
+    function lookupCeloRegistry(string memory contractName) internal view returns (address payable found) {
+        found = _lookupCeloRegistry(contractName);
         require(
-            addr != address(0), string(abi.encodePacked("Contracts: ", contractName, " not found in Celo registry."))
+            found != address(0), string(abi.encodePacked("Contracts: ", contractName, " not found in Celo registry."))
         );
     }
 
+    /// @dev Internal method that returns address(0) if contract is not found in the source.
     function _lookupCeloRegistry(string memory contractName) private view returns (address payable) {
         return payable(celoRegistry.getAddressForString(contractName));
     }
 
-    function lookupDependencies(string memory contractName) public view returns (address payable addr) {
-        addr = _lookupDependencies(contractName);
+    /**
+     * @notice Lookup a contract in the `dependencies.json` file.
+     * @dev Will throw if the contract isn't found.
+     * @param contractName The name of the contract to lookup.
+     * @return found The address of the contract.
+     */
+    function lookupDependencies(string memory contractName) public view returns (address payable found) {
+        found = _lookupDependencies(contractName);
         require(
-            addr != address(0), string(abi.encodePacked("Contracts: ", contractName, " not found in dependencies."))
+            found != address(0), string(abi.encodePacked("Contracts: ", contractName, " not found in dependencies."))
         );
     }
 
+    /// @dev Internal method that returns address(0) if contract is not found in the source.
     function _lookupDependencies(string memory contractName) private view returns (address payable) {
         bytes memory contractAddressRaw = dependencies.parseRaw(
             // solhint-disable-next-line quotes
@@ -157,15 +217,25 @@ abstract contract Contracts is CeloChains {
         return abi.decode(contractAddressRaw, (address));
     }
 
-    function lookupGovernanceFactory(string memory contractName) public view returns (address payable addr) {
-        addr = _lookupGovernanceFactory(contractName);
+    /**
+     * @notice Lookup a contract by querying the GovernanceFactory contract.
+     * @dev Will throw if the contract isn't found.
+     * @param contractName The name of the contract to lookup.
+     * @return found The address of the contract.
+     */
+    function lookupGovernanceFactory(string memory contractName) public view returns (address payable found) {
+        found = _lookupGovernanceFactory(contractName);
         require(
-            addr != address(0),
+            found != address(0),
             string(abi.encodePacked("Contracts: ", contractName, " not found in GovernanceFactory."))
         );
     }
 
-    function _lookupGovernanceFactory(string memory contractName) private view returns (address payable addr) {
+    /// @dev Internal method that returns address(0) if contract is not found in the source.
+    function _lookupGovernanceFactory(string memory contractName) private view returns (address payable found) {
+        bytes memory getter = govFactoryLookupFn[keccak256(bytes(contractName))];
+        if (getter.length == 0) return payable(address(0));
+
         address governanceFactory = _lookupDeployed("GovernanceFactory");
         if (governanceFactory == address(0)) {
             governanceFactory = _lookupDependencies("GovernanceFactory");
@@ -173,13 +243,10 @@ abstract contract Contracts is CeloChains {
                 return payable(address(0));
             }
         }
-        bytes memory getter = governanceFactoryLookupCalldata[keccak256(bytes(contractName))];
-
-        if (getter.length == 0) return payable(address(0));
 
         (bool ok, bytes memory data) = governanceFactory.staticcall(getter);
         if (ok) {
-            addr = abi.decode(data, (address));
+            found = abi.decode(data, (address));
         }
     }
 }
