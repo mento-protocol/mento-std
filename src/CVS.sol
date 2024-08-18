@@ -44,6 +44,7 @@ library CVS {
         assembly {
             addr := create(0, add(bytecode, 0x20), mload(bytecode))
         }
+        vm.label(addr, artifact);
         return addr;
     }
 
@@ -65,6 +66,7 @@ library CVS {
             success,
             "deployTo(address,string,bytes): Failed to create runtime bytecode."
         );
+        vm.label(target, artifact);
         vm.etch(target, runtimeBytecode);
     }
 }
