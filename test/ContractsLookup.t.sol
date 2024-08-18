@@ -30,6 +30,12 @@ abstract contract ContractsLookupTest is Test, ContractsLookup {
         return "/test/fixtures/dependencies.json";
     }
 
+    constructor() Test() ContractsLookup() {
+        vm.setEnv("CELO_RPC_URL", "https://forno.celo.org");
+        vm.setEnv("ALFAJORES_RPC_URL", "https://alfajores-forno.celo-testnet.org");
+        vm.setEnv("BAKLAVA_RPC_URL", "https://baklava-forno.celo-testnet.org");
+    }
+
     address contract01Expected;
     address contract02Expected;
     address contract03Expected;

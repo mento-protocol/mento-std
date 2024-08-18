@@ -8,6 +8,35 @@ import {CeloChains} from "src/CeloChains.sol";
 import {CELO_ID, BAKLAVA_ID, ALFAJORES_ID} from "src/Constants.sol";
 
 contract CeloChainsTest is Test {
+    address celoDeployerAddress;
+    address baklavaDeployerAddress;
+    address alfajoresDeployerAddress;
+
+    constructor() Test() {
+        vm.setEnv("CELO_RPC_URL", "https://forno.celo.org");
+        vm.setEnv(
+            "ALFAJORES_RPC_URL",
+            "https://alfajores-forno.celo-testnet.org"
+        );
+        vm.setEnv("BAKLAVA_RPC_URL", "https://baklava-forno.celo-testnet.org");
+
+        uint256 celoDeployerPk;
+        uint256 baklavaDeployerPk;
+        uint256 alfajoresDeployerPk;
+
+        (celoDeployerAddress, celoDeployerPk) = makeAddrAndKey("celoDeployer");
+        (alfajoresDeployerAddress, alfajoresDeployerPk) = makeAddrAndKey(
+            "alfajoresDeployer"
+        );
+        (baklavaDeployerAddress, baklavaDeployerPk) = makeAddrAndKey(
+            "baklavaDeployer"
+        );
+
+        vm.setEnv("celo_DEPLOYER_PK", vm.toString(celoDeployerPk));
+        vm.setEnv("alfajores_DEPLOYER_PK", vm.toString(alfajoresDeployerPk));
+        vm.setEnv("baklava_DEPLOYER_PK", vm.toString(baklavaDeployerPk));
+    }
+
     function test_getChainCelo() public {
         Chain memory chain = getChain(CELO_ID);
         assertEq(chain.chainAlias, "celo");
@@ -69,20 +98,20 @@ contract CeloChainsTest is Test {
     function test_deployerAddressCelo() public {
         fork(CELO_ID);
         address deployer = deployerAddress();
-        assertEq(deployer, 0x7d8979781389885A30918aa6Ebb5B606c55845f2);
+        assertEq(deployer, celoDeployerAddress);
     }
 
     // Should read pk from .env and derive correct address
     function test_deployerAddressBaklava() public {
         fork(BAKLAVA_ID);
         address deployer = deployerAddress();
-        assertEq(deployer, 0x83D8c67ADfFD01522C319476Fd14e85C431f2b63);
+        assertEq(deployer, baklavaDeployerAddress);
     }
 
     // Should read pk from .env and derive correct address
     function test_deployerAddressAlfajores() public {
         fork(ALFAJORES_ID);
         address deployer = deployerAddress();
-        assertEq(deployer, 0xa43e5313e12B84aC737f335A7897668f235768A9);
+        assertEq(deployer, alfajoresDeployerAddress);
     }
 }
