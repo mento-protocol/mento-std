@@ -42,19 +42,19 @@ abstract contract CeloChains is StdChains {
 
     /// @notice Determine if the current chain is Celo.
     /// @return true if the current chain is Celo.
-    function isCelo() internal view returns (bool) {
+    function isCelo() public view returns (bool) {
         return block.chainid == CELO_ID;
     }
 
     /// @notice Determine if the current chain is Baklava.
     /// @return true if the current chain is Baklava.
-    function isBaklava() internal view returns (bool) {
+    function isBaklava() public view returns (bool) {
         return block.chainid == BAKLAVA_ID;
     }
 
     /// @notice Determine if the current chain is Alfajores.
     /// @return true if the current chain is Alfajores.
-    function isAlfajores() internal view returns (bool) {
+    function isAlfajores() public view returns (bool) {
         return block.chainid == ALFAJORES_ID;
     }
 
