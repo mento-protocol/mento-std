@@ -45,7 +45,7 @@ abstract contract ContractsLookupTest is Test, ContractsLookup {
         load("Fixture0", "latest");
     }
 
-    function test_lookup_fromDeployed() public view {
+    function test_lookup_fromDeployed() public {
         address contract01 = lookup("Contract01");
         address contract02 = lookup("Contract02");
 
@@ -53,7 +53,7 @@ abstract contract ContractsLookupTest is Test, ContractsLookup {
         assertEq(contract02, contract02Expected);
     }
 
-    function test_lookupDeployed() public view {
+    function test_lookupDeployed() public {
         address contract01 = lookupDeployed("Contract01");
         address contract02 = lookupDeployed("Contract02");
 
@@ -61,27 +61,27 @@ abstract contract ContractsLookupTest is Test, ContractsLookup {
         assertEq(contract02, contract02Expected);
     }
 
-    function test_lookup_fromDependencies() public view {
+    function test_lookup_fromDependencies() public {
         address contract03 = lookup("Contract03");
         assertEq(contract03, contract03Expected);
     }
 
-    function test_lookupDependencies() public view {
+    function test_lookupDependencies() public {
         address contract03 = lookupDependencies("Contract03");
         assertEq(contract03, contract03Expected);
     }
 
-    function test_lookup_fromCeloRegistry() public view {
+    function test_lookup_fromCeloRegistry() public {
         address sortedOracles = lookup("SortedOracles");
         assertEq(sortedOracles, sortedOraclesExpected);
     }
 
-    function test_lookupCeloRegistry() public view {
+    function test_lookupCeloRegistry() public {
         address sortedOracles = lookupCeloRegistry("SortedOracles");
         assertEq(sortedOracles, sortedOraclesExpected);
     }
 
-    function test_lookup_fromGovernanceFactory() public view {
+    function test_lookup_fromGovernanceFactory() public {
         address mentoToken = lookup("MentoToken");
         address emission = lookup("Emission");
         address airgrab = lookup("Airgrab");
@@ -97,7 +97,7 @@ abstract contract ContractsLookupTest is Test, ContractsLookup {
         assertEq(locking, lockingExpected);
     }
 
-    function test_lookupGovernanceFactory() public view {
+    function test_lookupGovernanceFactory() public {
         address mentoToken = lookupGovernanceFactory("MentoToken");
         address emission = lookupGovernanceFactory("Emission");
         address airgrab = lookupGovernanceFactory("Airgrab");
@@ -113,11 +113,11 @@ abstract contract ContractsLookupTest is Test, ContractsLookup {
         assertEq(locking, lockingExpected);
     }
 
-    function testFail_lookupWhenNone() public view {
+    function testFail_lookupWhenNone() public {
         lookup("UnknownContract");
     }
 
-    function testFail_lookupWhenMultiple() public view {
+    function testFail_lookupWhenMultiple() public {
         lookup("StableToken");
     }
 }
