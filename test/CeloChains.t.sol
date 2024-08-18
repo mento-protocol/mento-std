@@ -14,10 +14,7 @@ contract CeloChainsTest is Test {
 
     constructor() Test() {
         vm.setEnv("CELO_RPC_URL", "https://forno.celo.org");
-        vm.setEnv(
-            "ALFAJORES_RPC_URL",
-            "https://alfajores-forno.celo-testnet.org"
-        );
+        vm.setEnv("ALFAJORES_RPC_URL", "https://alfajores-forno.celo-testnet.org");
         vm.setEnv("BAKLAVA_RPC_URL", "https://baklava-forno.celo-testnet.org");
 
         uint256 celoDeployerPk;
@@ -25,12 +22,8 @@ contract CeloChainsTest is Test {
         uint256 alfajoresDeployerPk;
 
         (celoDeployerAddress, celoDeployerPk) = makeAddrAndKey("celoDeployer");
-        (alfajoresDeployerAddress, alfajoresDeployerPk) = makeAddrAndKey(
-            "alfajoresDeployer"
-        );
-        (baklavaDeployerAddress, baklavaDeployerPk) = makeAddrAndKey(
-            "baklavaDeployer"
-        );
+        (alfajoresDeployerAddress, alfajoresDeployerPk) = makeAddrAndKey("alfajoresDeployer");
+        (baklavaDeployerAddress, baklavaDeployerPk) = makeAddrAndKey("baklavaDeployer");
 
         vm.setEnv("celo_DEPLOYER_PK", vm.toString(celoDeployerPk));
         vm.setEnv("alfajores_DEPLOYER_PK", vm.toString(alfajoresDeployerPk));
