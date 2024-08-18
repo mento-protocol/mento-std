@@ -166,9 +166,13 @@ abstract contract Contracts is CeloChains {
     }
 
     function _lookupGovernanceFactory(string memory contractName) private view returns (address payable addr) {
-        address governanceFactory = _lookupDependencies("GovernanceFactory");
-        if (governanceFactory == address(0)) return payable(address(0));
-
+        address governanceFactory = _lookupDeployed("GovernanceFactory");
+        if (governanceFactory == address(0)) {
+            governanceFactory = _lookupDependencies("GovernanceFactory");
+            if (governanceFactory == address(0)) {
+                return payable(address(0));
+            }
+        }
         bytes memory getter = governanceFactoryLookupCalldata[keccak256(bytes(contractName))];
 
         if (getter.length == 0) return payable(address(0));
