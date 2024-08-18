@@ -34,10 +34,7 @@ library CVS {
      * @param args Arguments to pass to the contract constructor.
      * @return addr Address of the deployed contracts.
      */
-    function deploy(
-        string memory artifact,
-        bytes memory args
-    ) internal returns (address addr) {
+    function deploy(string memory artifact, bytes memory args) internal returns (address addr) {
         bytes memory bytecode = abi.encodePacked(vm.getCode(artifact), args);
 
         // solhint-disable-next-line no-inline-assembly
@@ -54,18 +51,11 @@ library CVS {
      * @param artifact Artifact to deploy, must be compatbile with vm.getCode.
      * @param args Arguments to pass to the contract constructor.
      */
-    function deployTo(
-        address target,
-        string memory artifact,
-        bytes memory args
-    ) internal {
+    function deployTo(address target, string memory artifact, bytes memory args) internal {
         bytes memory creationCode = vm.getCode(artifact);
         vm.etch(target, abi.encodePacked(creationCode, args));
         (bool success, bytes memory runtimeBytecode) = target.call("");
-        require(
-            success,
-            "deployTo(address,string,bytes): Failed to create runtime bytecode."
-        );
+        require(success, "deployTo(address,string,bytes): Failed to create runtime bytecode.");
         vm.label(target, artifact);
         vm.etch(target, runtimeBytecode);
     }
