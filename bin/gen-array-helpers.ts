@@ -28,29 +28,34 @@ const TARGETS = {
 } as const;
 const MAX_SIZE = 8;
 
-let fileContent = HEADER;
-for (const [fn, config] of Object.entries(TARGETS)) {
-  const { type } = config;
-  for (let i = 1; i <= MAX_SIZE; i++) {
-    let args = "";
-    let assignments = "";
-    for (let j = 0; j < i; j++) {
-      args += `  ${type} e${j}${j < i - 1 ? ',\n' : ''}`
-      assignments += `  arr[${j}] = e${j};\n`
-    }
+const templateFnAssignments = (size: number): string => {
+  let content = '';
+  for (let j = 0; j < size; j++) {
+    content += `    arr[${j}] = e${j};\n`
+  }
+  return content;
+}
 
-    fileContent += `
+const templateFnArgs = (type: string, size: number): string => {
+  let content = '';
+  for (let j = 0; j < size; j++) {
+    content += `    ${type} e${j}${j < size - 1 ? ',\n' : ''}`
+  }
+  return content;
+}
+
+const templateFunction = (fn: string, type: string, size: number) => `
 function ${fn}(
-${args}
+${templateFnArgs(type, size)}
 ) pure returns (${type}[] memory arr) {
-  arr = new ${type}[](${i});
-${assignments}
-  return arr;
+    arr = new ${type}[](${size});
+${templateFnAssignments(size)}
+    return arr;
 }
 `
-  }
-  fileContent += `
-function contains(${type}[] memory self, ${type} value) pure returns (bool) {
+
+const templateContains = (type: string) => `
+function contains(${type}[] memory self, ${type} value) pure returns(bool) {
     for (uint256 i = 0; i < self.length; i++) {
         if (self[i] == value) {
             return true;
@@ -59,7 +64,14 @@ function contains(${type}[] memory self, ${type} value) pure returns (bool) {
     return false;
 }
 `
+
+let fileContent = HEADER;
+for (const [fn, config] of Object.entries(TARGETS)) {
+  const { type } = config;
+  for (let i = 1; i <= MAX_SIZE; i++) {
+    fileContent += templateFunction(fn, type, i);
+  }
+  fileContent += templateContains(type);
 }
 
 fs.writeFileSync("src/Array.sol", fileContent);
-
