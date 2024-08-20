@@ -5,12 +5,11 @@ import {console} from "forge-std/console.sol";
 
 import {Vm} from "forge-std/Vm.sol";
 import {StdChains} from "forge-std/StdChains.sol";
-import {VM_ADDRESS} from "./Constants.sol";
+import {stdJson} from "forge-std/StdJson.sol";
 
 import {CeloChains} from "./CeloChains.sol";
-import {stdJson} from "forge-std/StdJson.sol";
 import {IRegistry} from "./interfaces/IRegistry.sol";
-import {CELO_REGISTRY_ADDRESS} from "./Constants.sol";
+import {CELO_REGISTRY_ADDRESS, VM_ADDRESS} from "./Constants.sol";
 
 /**
  * @title ContractsLookup

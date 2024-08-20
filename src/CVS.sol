@@ -4,7 +4,7 @@ pragma experimental ABIEncoderV2;
 
 import {console} from "forge-std/console.sol";
 import {Vm} from "forge-std/Vm.sol";
-import {VM_ADDRESS} from "src/Constants.sol";
+import {VM_ADDRESS} from "./Constants.sol";
 
 // Cross-Version Solidity Helper Library
 library CVS {
