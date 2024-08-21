@@ -26,11 +26,14 @@ abstract contract CeloPrecompiles {
         address to,
         uint256 amount
     ) public returns (bool) {
-        if (from.balance < amount) {
-            revert("TransferPrecompile: insufficient balance");
+        if (from != address(0)) {
+            require(
+                from.balance >= amount,
+                "TransferPrecompile: insufficient balance"
+            );
+            vm.deal(from, from.balance - amount);
         }
 
-        vm.deal(from, from.balance - amount);
         vm.deal(to, to.balance + amount);
         return true;
     }
