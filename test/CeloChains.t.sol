@@ -14,7 +14,10 @@ contract CeloChainsTest is Test {
 
     constructor() Test() {
         vm.setEnv("CELO_RPC_URL", "https://forno.celo.org");
-        vm.setEnv("ALFAJORES_RPC_URL", "https://alfajores-forno.celo-testnet.org");
+        vm.setEnv(
+            "ALFAJORES_RPC_URL",
+            "https://alfajores-forno.celo-testnet.org"
+        );
         vm.setEnv("BAKLAVA_RPC_URL", "https://baklava-forno.celo-testnet.org");
 
         uint256 celoDeployerPk;
@@ -22,8 +25,12 @@ contract CeloChainsTest is Test {
         uint256 alfajoresDeployerPk;
 
         (celoDeployerAddress, celoDeployerPk) = makeAddrAndKey("celoDeployer");
-        (alfajoresDeployerAddress, alfajoresDeployerPk) = makeAddrAndKey("alfajoresDeployer");
-        (baklavaDeployerAddress, baklavaDeployerPk) = makeAddrAndKey("baklavaDeployer");
+        (alfajoresDeployerAddress, alfajoresDeployerPk) = makeAddrAndKey(
+            "alfajoresDeployer"
+        );
+        (baklavaDeployerAddress, baklavaDeployerPk) = makeAddrAndKey(
+            "baklavaDeployer"
+        );
 
         vm.setEnv("celo_DEPLOYER_PK", vm.toString(celoDeployerPk));
         vm.setEnv("alfajores_DEPLOYER_PK", vm.toString(alfajoresDeployerPk));
@@ -85,6 +92,33 @@ contract CeloChainsTest is Test {
         fork(ALFAJORES_ID);
         Chain memory chain = getChain();
         assertEq(chain.chainAlias, "alfajores");
+    }
+
+    function test_forkCeloAtBlock() public {
+        fork(CELO_ID);
+        uint256 blockNumber = block.number - 100;
+        fork(CELO_ID, blockNumber);
+        Chain memory chain = getChain();
+        assertEq(block.number, blockNumber);
+        assertEq(chain.chainAlias, "celo");
+    }
+
+    function test_forkAlfajoresAtBlock() public {
+        fork(ALFAJORES_ID);
+        uint256 blockNumber = block.number - 100;
+        fork(ALFAJORES_ID, blockNumber);
+        Chain memory chain = getChain();
+        assertEq(block.number, blockNumber);
+        assertEq(chain.chainAlias, "alfajores");
+    }
+
+    function test_forkBaklavaAtBlock() public {
+        fork(BAKLAVA_ID);
+        uint256 blockNumber = block.number - 100;
+        fork(BAKLAVA_ID, blockNumber);
+        Chain memory chain = getChain();
+        assertEq(block.number, blockNumber);
+        assertEq(chain.chainAlias, "baklava");
     }
 
     // Should read pk from .env and derive correct address

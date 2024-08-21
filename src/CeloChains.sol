@@ -36,7 +36,10 @@ abstract contract CeloChains is StdChains {
 
     /// @notice Setup a fork environment for a chain.
     function fork(uint256 chainId) internal {
-        fork(chainId, block.timestamp);
+        initializeCeloChains();
+        StdChains.Chain memory chain = getChain(chainId);
+        uint256 forkId = vm.createFork(chain.rpcUrl);
+        vm.selectFork(forkId);
     }
 
     /// @notice Setup a fork environment for a chain, at a specific block height.
