@@ -14,7 +14,9 @@ abstract contract CeloChains is StdChains {
     /// @return private key of the deployer.
     function deployerPrivateKey() internal returns (uint256) {
         Chain memory chain = getChain(block.chainid);
-        string memory pkEnvVar = string(abi.encodePacked(chain.chainAlias, "_DEPLOYER_PK"));
+        string memory pkEnvVar = string(
+            abi.encodePacked(chain.chainAlias, "_DEPLOYER_PK")
+        );
         return vm.envUint(pkEnvVar);
     }
 
@@ -32,11 +34,16 @@ abstract contract CeloChains is StdChains {
         vm.selectFork(forkId);
     }
 
-    /// @notice Setup a fork environment for the current chain.
+    /// @notice Setup a fork environment for a chain.
     function fork(uint256 chainId) internal {
+        fork(chainId, block.timestamp);
+    }
+
+    /// @notice Setup a fork environment for a chain, at a specific block height.
+    function fork(uint256 chainId, uint256 blockHeight) internal {
         initializeCeloChains();
         StdChains.Chain memory chain = getChain(chainId);
-        uint256 forkId = vm.createFork(chain.rpcUrl);
+        uint256 forkId = vm.createFork(chain.rpcUrl, blockHeight);
         vm.selectFork(forkId);
     }
 
@@ -64,12 +71,20 @@ abstract contract CeloChains is StdChains {
         celoChainsInitialized = true;
 
         setChain("celo", StdChains.ChainData("Celo", CELO_ID, ""));
-        setChain("alfajores", StdChains.ChainData("Celo Alfajores Testnet", ALFAJORES_ID, ""));
-        setChain("baklava", StdChains.ChainData("Celo Baklava Testnet", BAKLAVA_ID, ""));
+        setChain(
+            "alfajores",
+            StdChains.ChainData("Celo Alfajores Testnet", ALFAJORES_ID, "")
+        );
+        setChain(
+            "baklava",
+            StdChains.ChainData("Celo Baklava Testnet", BAKLAVA_ID, "")
+        );
     }
 
     /// @dev Override getChain to initialize Celo chains before lookup.
-    function getChain(uint256 chainId) internal override returns (Chain memory) {
+    function getChain(
+        uint256 chainId
+    ) internal override returns (Chain memory) {
         initializeCeloChains();
         return super.getChain(chainId);
     }
