@@ -30,11 +30,6 @@ const TARGETS = {
 const MAX_SIZE = 8;
 ```
 
-### Cross-Version Solidity (CVS)
-
-CVS is a library that's used to deploy foundry artifacts compiled with a different solidity version.
-It's an evolution (and simplification) of the `Factory.sol`, previously used in `mento-core` and `mento-deployments`;
-
 ### CeloChains
 
 CeloChains is an extension of the `StdChains` contract in `forge-std`. 
