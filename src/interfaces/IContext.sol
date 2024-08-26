@@ -9,6 +9,12 @@ pragma solidity ^0.8;
 interface IContext {
     function lookup(string memory contractName) external view returns (address);
 
+    function lookupCeloRegistry(string memory contractName) external view returns (address);
+
+    function lookupDeployed(string memory contractName) external view returns (address);
+
+    function lookupDependencies(string memory contractName) external view returns (address);
+
     function isCelo() external view returns (bool);
 
     function isBaklava() external view returns (bool);
