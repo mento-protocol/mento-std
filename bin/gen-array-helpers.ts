@@ -9,19 +9,27 @@ import fs from 'fs';
 // @dev Add more types to the TARGETS object to generate more functions
 const TARGETS = {
   uints: { // function name
-    type: "uint256" // type
+    type: "uint256", // type
+    skipContains: false
   },
   addresses: {
-    type: 'address'
+    type: 'address',
+    skipContains: false
   },
   bytes4s: {
-    type: 'bytes4'
+    type: 'bytes4',
+    skipContains: false
   },
   bytes32s: {
-    type: 'bytes32'
+    type: 'bytes32',
+    skipContains: false
   },
   bytesList: {
     type: 'bytes',
+    skipContains: true
+  },
+  stringList: {
+    type: 'string',
     skipContains: true
   }
 } as const;
@@ -30,6 +38,7 @@ const TARGETS = {
 const MAX_SIZE = 8;
 const MEMORY_IN_ARGS = {
   "bytes": true,
+  "string": true,
   "uint256": false,
   "address": false,
   "bytes4": false,

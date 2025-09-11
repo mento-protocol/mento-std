@@ -678,3 +678,131 @@ function bytesList(
 
     return arr;
 }
+
+function stringList(
+    string memory e0
+) pure returns (string[] memory arr) {
+    arr = new string[](1);
+    arr[0] = e0;
+
+    return arr;
+}
+
+function stringList(
+    string memory e0,
+    string memory e1
+) pure returns (string[] memory arr) {
+    arr = new string[](2);
+    arr[0] = e0;
+    arr[1] = e1;
+
+    return arr;
+}
+
+function stringList(
+    string memory e0,
+    string memory e1,
+    string memory e2
+) pure returns (string[] memory arr) {
+    arr = new string[](3);
+    arr[0] = e0;
+    arr[1] = e1;
+    arr[2] = e2;
+
+    return arr;
+}
+
+function stringList(
+    string memory e0,
+    string memory e1,
+    string memory e2,
+    string memory e3
+) pure returns (string[] memory arr) {
+    arr = new string[](4);
+    arr[0] = e0;
+    arr[1] = e1;
+    arr[2] = e2;
+    arr[3] = e3;
+
+    return arr;
+}
+
+function stringList(
+    string memory e0,
+    string memory e1,
+    string memory e2,
+    string memory e3,
+    string memory e4
+) pure returns (string[] memory arr) {
+    arr = new string[](5);
+    arr[0] = e0;
+    arr[1] = e1;
+    arr[2] = e2;
+    arr[3] = e3;
+    arr[4] = e4;
+
+    return arr;
+}
+
+function stringList(
+    string memory e0,
+    string memory e1,
+    string memory e2,
+    string memory e3,
+    string memory e4,
+    string memory e5
+) pure returns (string[] memory arr) {
+    arr = new string[](6);
+    arr[0] = e0;
+    arr[1] = e1;
+    arr[2] = e2;
+    arr[3] = e3;
+    arr[4] = e4;
+    arr[5] = e5;
+
+    return arr;
+}
+
+function stringList(
+    string memory e0,
+    string memory e1,
+    string memory e2,
+    string memory e3,
+    string memory e4,
+    string memory e5,
+    string memory e6
+) pure returns (string[] memory arr) {
+    arr = new string[](7);
+    arr[0] = e0;
+    arr[1] = e1;
+    arr[2] = e2;
+    arr[3] = e3;
+    arr[4] = e4;
+    arr[5] = e5;
+    arr[6] = e6;
+
+    return arr;
+}
+
+function stringList(
+    string memory e0,
+    string memory e1,
+    string memory e2,
+    string memory e3,
+    string memory e4,
+    string memory e5,
+    string memory e6,
+    string memory e7
+) pure returns (string[] memory arr) {
+    arr = new string[](8);
+    arr[0] = e0;
+    arr[1] = e1;
+    arr[2] = e2;
+    arr[3] = e3;
+    arr[4] = e4;
+    arr[5] = e5;
+    arr[6] = e6;
+    arr[7] = e7;
+
+    return arr;
+}
